@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Login — BloodLife{% endblock %}
+{% block content %}
+<style>
+  .auth-wrapper{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 16px;background:linear-gradient(135deg,#fdecea 0%,#f0f2f7 100%);}
+  .auth-card{width:100%;max-width:440px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(192,57,43,.15);}
+  .auth-header{background:linear-gradient(135deg,#c0392b,#7b241c);padding:40px 36px 30px;color:#fff;text-align:center;}
+  .auth-header h2{font-weight:800;font-size:1.8rem;margin:12px 0 4px;}
+  .auth-header p{opacity:.8;font-size:.92rem;}
+  .auth-body{background:#fff;padding:36px;}
+</style>
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <svg width="56" height="70" viewBox="0 0 40 50" fill="none"><path d="M20 2C20 2,4 22,4 33C4 42.3,11.2 48,20 48C28.8 48,36 42.3,36 33C36 22,20 2,20 2Z" fill="rgba(255,255,255,0.85)"/><path d="M20 12C20 12,10 26,10 33C10 38.5,14.5 43,20 43" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none"/></svg>
+      <h2>Welcome Back</h2>
+      <p>Sign in to your BloodLife account</p>
+    </div>
+    <div class="auth-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <div class="input-group">
+            <span class="input-group-text" style="background:#f8f9fc;border:1.5px solid #e8e8e8;border-right:none;border-radius:10px 0 0 10px;color:#888;"><i class="fas fa-user"></i></span>
+            <input type="text" name="username" class="form-control" placeholder="Enter username" required style="border-left:none;border-radius:0 10px 10px 0;">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Password</label>
+          <div class="input-group">
+            <span class="input-group-text" style="background:#f8f9fc;border:1.5px solid #e8e8e8;border-right:none;border-radius:10px 0 0 10px;color:#888;"><i class="fas fa-lock"></i></span>
+            <input type="password" name="password" class="form-control" placeholder="Enter password" required style="border-left:none;border-radius:0 10px 10px 0;">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-blood w-100 py-3" style="font-size:1rem;">
+          <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </button>
+      </form>
+      <p class="text-center mt-4 mb-0" style="color:#888;font-size:.9rem;">
+        Don't have an account? <a href="{% url 'registration_choice' %}" style="color:var(--blood-red);font-weight:600;">Register here</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

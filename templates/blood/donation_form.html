@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Donate Blood - BloodMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="page-header">
+      <h2><i class="fas fa-hand-holding-heart me-2 text-danger"></i>Register Blood Donation</h2>
+      <p class="text-muted">Fill in the details below to submit a donation request.</p>
+    </div>
+    <div class="card">
+      <div class="card-header bg-danger text-white fw-semibold">Donation Details</div>
+      <div class="card-body p-4">
+        <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+          <i class="fas fa-info-circle"></i>
+          <div>Your blood group is <strong>{{ request.user.donor_profile.blood_group }}</strong>. Donation will be recorded under this group.</div>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Blood Bank *</label>
+              <select name="blood_bank" class="form-select" required>
+                <option value="">-- Select Blood Bank --</option>
+                {% for bank in blood_banks %}
+                <option value="{{ bank.pk }}">{{ bank.name }} - {{ bank.city }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Donation Date *</label>
+              <input type="date" name="donation_date" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Units to Donate</label>
+              <input type="number" name="units" class="form-control" value="1" min="1" max="3">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Notes (optional)</label>
+              <textarea name="notes" class="form-control" rows="3" placeholder="Any health conditions or special notes..."></textarea>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-blood px-4"><i class="fas fa-paper-plane me-2"></i>Submit Donation</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

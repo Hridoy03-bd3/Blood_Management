@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Request Blood - BloodMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="page-header">
+      <h2><i class="fas fa-tint me-2 text-danger"></i>Request Blood</h2>
+      <p class="text-muted">Submit an emergency or regular blood request below.</p>
+    </div>
+    <div class="card">
+      <div class="card-header bg-danger text-white fw-semibold">Blood Request Form</div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Blood Group Needed *</label>
+              <select name="blood_group" class="form-select" required>
+                {% for code, label in blood_groups %}
+                <option value="{{ code }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Units Needed *</label>
+              <input type="number" name="units_needed" class="form-control" value="1" min="1" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Patient Name *</label>
+              <input type="text" name="patient_name" class="form-control" placeholder="Full name of patient" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Hospital Name *</label>
+              <input type="text" name="hospital_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Hospital City</label>
+              <input type="text" name="hospital_city" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Contact Number *</label>
+              <input type="text" name="contact_number" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Urgency Level *</label>
+              <select name="urgency" class="form-select" required>
+                <option value="normal">Normal</option>
+                <option value="urgent">Urgent</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Required By Date</label>
+              <input type="date" name="required_date" class="form-control">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Reason / Description</label>
+              <textarea name="reason" class="form-control" rows="3" placeholder="Describe why blood is needed..."></textarea>
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-blood px-4"><i class="fas fa-paper-plane me-2"></i>Submit Request</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

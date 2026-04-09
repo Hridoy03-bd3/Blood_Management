@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}User: {{ viewed_user.username }} — Admin{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'admin_user_management' %}" class="btn btn-sm btn-outline-blood mb-3"><i class="fas fa-arrow-left me-1"></i>Back to Users</a>
+  <h1><i class="fas fa-user-circle me-2" style="color:var(--blood-red)"></i>User Profile</h1>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card text-center p-4">
+      <div style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,{% if viewed_user.role == 'admin' %}#c0392b,#e74c3c{% else %}#2980b9,#3498db{% endif %});color:#fff;font-size:2rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 6px 20px rgba(0,0,0,.2);">
+        {{ viewed_user.first_name|first|upper }}{{ viewed_user.last_name|first|upper }}
+      </div>
+      <h4 style="font-weight:700;color:#1a1a2e;margin-bottom:4px;">{{ viewed_user.get_full_name|default:viewed_user.username }}</h4>
+      <p style="color:#888;margin-bottom:16px;">@{{ viewed_user.username }}</p>
+      {% if viewed_user.role == 'admin' %}
+        <span class="badge-status" style="background:#fdecea;color:var(--blood-red);padding:6px 16px;border-radius:20px;font-weight:600;"><i class="fas fa-shield-alt me-1"></i>Administrator</span>
+      {% else %}
+        <span class="badge-status" style="background:#e8f5e9;color:#1b5e20;padding:6px 16px;border-radius:20px;font-weight:600;"><i class="fas fa-heart me-1"></i>Donor</span>
+      {% endif %}
+      <div class="mt-3">
+        {% if viewed_user.is_active %}<span class="badge-status status-approved">Active Account</span>{% else %}<span class="badge-status status-rejected">Inactive</span>{% endif %}
+      </div>
+      {% if viewed_user != request.user %}
+      <div class="mt-4 d-flex flex-column gap-2">
+        <form method="post" action="{% url 'admin_toggle_user' viewed_user.pk %}">{% csrf_token %}
+          <button type="submit" class="btn btn-sm w-100 {% if viewed_user.is_active %}btn-warning{% else %}btn-success{% endif %}">
+            <i class="fas fa-{% if viewed_user.is_active %}ban{% else %}check{% endif %} me-1"></i>{% if viewed_user.is_active %}Deactivate Account{% else %}Activate Account{% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'admin_promote_user' viewed_user.pk %}">{% csrf_token %}
+          <button type="submit" class="btn btn-sm w-100 btn-info" style="color:#fff;">
+            <i class="fas fa-{% if viewed_user.role == 'admin' %}arrow-down{% else %}arrow-up{% endif %} me-1"></i>{% if viewed_user.role == 'admin' %}Demote to Donor{% else %}Promote to Admin{% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'admin_delete_user' viewed_user.pk %}" onsubmit="return confirm('Permanently delete {{ viewed_user.username }}?');">{% csrf_token %}
+          <button type="submit" class="btn btn-sm w-100 btn-danger"><i class="fas fa-trash me-1"></i>Delete User</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card mb-4">
+      <div class="card-header">Account Details</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Full Name</label><div style="font-weight:600;color:#333;">{{ viewed_user.get_full_name|default:"Not set" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Email</label><div style="font-weight:600;color:#333;">{{ viewed_user.email|default:"—" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Phone</label><div style="font-weight:600;color:#333;">{{ viewed_user.phone|default:"—" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Joined</label><div style="font-weight:600;color:#333;">{{ viewed_user.date_joined|date:"M d, Y" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Last Login</label><div style="font-weight:600;color:#333;">{{ viewed_user.last_login|date:"M d, Y H:i"|default:"Never" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Staff Status</label><div style="font-weight:600;color:#333;">{% if viewed_user.is_staff %}Yes{% else %}No{% endif %}</div></div>
+        </div>
+      </div>
+    </div>
+
+    {% if viewed_user.role == 'donor' %}
+    <div class="card mb-4">
+      <div class="card-header">Donor Profile</div>
+      <div class="card-body">
+        {% if donor_profile %}
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Blood Group</label>
+            <div><span class="blood-group-badge" style="width:38px;height:38px;font-size:.8rem;">{{ donor_profile.blood_group }}</span></div>
+          </div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">City</label><div style="font-weight:600;color:#333;">{{ donor_profile.city|default:"—" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Total Donations</label><div style="font-weight:700;color:var(--blood-red);font-size:1.2rem;">{{ donor_profile.total_donations }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Last Donation</label><div style="font-weight:600;color:#333;">{{ donor_profile.last_donation_date|date:"M d, Y"|default:"Never" }}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Available</label><div>{% if donor_profile.is_available %}<span class="badge-status status-approved">Available</span>{% else %}<span class="badge-status status-rejected">Not Available</span>{% endif %}</div></div>
+          <div class="col-sm-6"><label class="form-label" style="font-size:.78rem;color:#aaa;margin-bottom:2px;">Gender</label><div style="font-weight:600;color:#333;">{{ donor_profile.gender|capfirst|default:"—" }}</div></div>
+        </div>
+        {% else %}<p class="text-muted">No donor profile found.</p>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Donations -->
+    <div class="card mb-4">
+      <div class="card-header">Donation History ({{ donations.count }})</div>
+      <div class="card-body p-0">
+        {% if donations %}
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>Date</th><th>Blood Bank</th><th>Units</th><th>Status</th></tr></thead>
+            <tbody>{% for d in donations %}<tr>
+              <td style="font-size:.85rem;">{{ d.donation_date|date:"M d, Y" }}</td>
+              <td style="font-size:.85rem;">{{ d.blood_bank.name }}</td>
+              <td style="font-weight:700;">{{ d.units }}</td>
+              <td><span class="badge-status status-{{ d.status }}">{{ d.get_status_display }}</span></td>
+            </tr>{% endfor %}</tbody>
+          </table>
+        </div>
+        {% else %}<div class="empty-state" style="padding:30px;"><p>No donations yet.</p></div>{% endif %}
+      </div>
+    </div>
+
+    <!-- Requests -->
+    <div class="card">
+      <div class="card-header">Blood Requests ({{ blood_requests.count }})</div>
+      <div class="card-body p-0">
+        {% if blood_requests %}
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>Patient</th><th>Blood</th><th>Urgency</th><th>Status</th></tr></thead>
+            <tbody>{% for r in blood_requests %}<tr>
+              <td style="font-size:.85rem;">{{ r.patient_name }}</td>
+              <td><span class="blood-group-badge" style="width:30px;height:30px;font-size:.65rem;">{{ r.blood_group }}</span></td>
+              <td><span class="urgency-{{ r.urgency }}" style="font-size:.82rem;">{{ r.get_urgency_display }}</span></td>
+              <td><span class="badge-status status-{{ r.status }}">{{ r.get_status_display }}</span></td>
+            </tr>{% endfor %}</tbody>
+          </table>
+        </div>
+        {% else %}<div class="empty-state" style="padding:30px;"><p>No requests yet.</p></div>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

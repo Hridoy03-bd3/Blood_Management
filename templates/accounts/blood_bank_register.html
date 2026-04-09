@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Blood Bank Registration — BloodLife{% endblock %}
+{% block content %}
+<style>
+  .auth-wrapper{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 16px;background:linear-gradient(135deg,#e8f5e9 0%,#f0f2f7 100%);}
+  .auth-card{width:100%;max-width:600px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(27,94,32,.15);}
+  .auth-header{background:linear-gradient(135deg,#2e7d32,#1b5e20);padding:40px 36px 30px;color:#fff;text-align:center;}
+  .auth-header h2{font-weight:800;font-size:1.8rem;margin:12px 0 4px;}
+  .auth-header p{opacity:.8;font-size:.92rem;}
+  .auth-body{background:#fff;padding:36px;}
+  .form-section{margin-bottom:24px;}
+  .form-section h5{font-size:.95rem;font-weight:700;color:#1b5e20;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8f5e9;}
+</style>
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <svg width="56" height="70" viewBox="0 0 40 50" fill="none"><path d="M12 8C10.9 8,10 8.9,10 10v20c0 1.1.9 2,2 2h16c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2H12zm8 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm4-8H12v-2h12v2z" fill="currentColor"/></svg>
+      <h2>Blood Bank Registration</h2>
+      <p>Register your blood bank with BloodLife</p>
+    </div>
+    <div class="auth-body">
+      {% if errors %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Registration Error!</strong>
+        <ul class="mb-0 mt-2">
+          {% for key, msg in errors.items %}<li>{{ msg }}</li>{% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Account Information -->
+        <div class="form-section">
+          <h5><i class="fas fa-user-circle me-2"></i>Account Information</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" name="username" class="form-control" placeholder="Enter username" value="{{ form_data.username }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="Enter email" value="{{ form_data.email }}" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" name="password" class="form-control" placeholder="Min 8 characters" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blood Bank Information -->
+        <div class="form-section">
+          <h5><i class="fas fa-hospital me-2"></i>Blood Bank Information</h5>
+          <div class="mb-3">
+            <label class="form-label">Bank Name</label>
+            <input type="text" name="bank_name" class="form-control" placeholder="Your blood bank name" value="{{ form_data.bank_name }}" required>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Registration Number</label>
+              <input type="text" name="registration_number" class="form-control" placeholder="e.g., BB-001" value="{{ form_data.registration_number }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">License Number</label>
+              <input type="text" name="license_number" class="form-control" placeholder="License number (optional)" value="{{ form_data.license_number }}">
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="form-section">
+          <h5><i class="fas fa-phone me-2"></i>Contact Information</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Contact Number</label>
+              <input type="tel" name="contact_number" class="form-control" placeholder="+1234567890" value="{{ form_data.contact_number }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Phone</label>
+              <input type="tel" name="phone" class="form-control" placeholder="Additional phone" value="{{ form_data.phone }}">
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="form-section">
+          <h5><i class="fas fa-map-marker-alt me-2"></i>Location Information</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">City</label>
+              <input type="text" name="city" class="form-control" placeholder="City name" value="{{ form_data.city }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Location</label>
+              <input type="text" name="location" class="form-control" placeholder="Street/area name" value="{{ form_data.location }}" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea name="address" class="form-control" placeholder="Full address" rows="2" required>{{ form_data.address }}</textarea>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-success w-100 py-3" style="font-size:1rem;background:#2e7d32;border:none;">
+          <i class="fas fa-check-circle me-2"></i>Register Blood Bank
+        </button>
+      </form>
+
+      <p class="text-center mt-3" style="color:#888;font-size:.9rem;">
+        <a href="{% url 'registration_choice' %}" style="color:#666;font-weight:600;">← Choose different registration type</a>
+      </p>
+      <p class="text-center" style="color:#888;font-size:.9rem;">
+        Already have an account? <a href="{% url 'login' %}" style="color:#2e7d32;font-weight:600;">Sign in here</a>
+      </p>
+      <p class="text-center" style="color:#888;font-size:.85rem;margin-top:16px;padding-top:16px;border-top:1px solid #eee;">
+        <i class="fas fa-info-circle me-1" style="color:#2e7d32;"></i>
+        Your registration will be verified by an admin before you can access the full system.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

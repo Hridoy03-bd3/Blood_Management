@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BloodLife — Blood Management System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--blood-red:#c0392b;--blood-dark:#922b21;--blood-light:#fdecea;--blood-mid:#e74c3c;--sidebar-width:270px;--gold:#f39c12;--green:#27ae60;--blue:#2980b9;}
+    *{font-family:'Inter','Segoe UI',sans-serif;}
+    body{background:#f0f2f7;min-height:100vh;}
+    .navbar{background:linear-gradient(135deg,#c0392b 0%,#7b241c 100%)!important;box-shadow:0 4px 20px rgba(192,57,43,.4);padding:0 24px;height:64px;}
+    .navbar-brand{font-weight:800;font-size:1.3rem;letter-spacing:.5px;display:flex;align-items:center;gap:10px;color:#fff!important;}
+    .navbar .nav-link{color:rgba(255,255,255,.85)!important;font-weight:500;padding:8px 14px;border-radius:8px;transition:.2s;}
+    .navbar .nav-link:hover{background:rgba(255,255,255,.15);color:#fff!important;}
+    .navbar .dropdown-menu{border:none;box-shadow:0 8px 30px rgba(0,0,0,.15);border-radius:12px;}
+    .user-badge{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 14px;border-radius:30px;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.25);transition:.2s;}
+    .user-badge:hover{background:rgba(255,255,255,.28);}
+    .user-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;}
+    .sidebar{width:var(--sidebar-width);min-height:calc(100vh - 64px);background:#fff;box-shadow:2px 0 20px rgba(0,0,0,.06);position:fixed;top:64px;left:0;overflow-y:auto;z-index:100;padding-bottom:40px;}
+    .sidebar-section{padding:20px 16px 8px;font-size:.7rem;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:1.2px;}
+    .sidebar .nav-link{color:#555!important;padding:11px 18px;border-radius:10px;margin:2px 10px;transition:all .2s;display:flex;align-items:center;gap:12px;font-weight:500;font-size:.9rem;}
+    .sidebar .nav-link i{width:20px;text-align:center;font-size:1rem;}
+    .sidebar .nav-link:hover{background:var(--blood-light);color:var(--blood-red)!important;transform:translateX(3px);}
+    .sidebar .nav-link.active{background:linear-gradient(135deg,var(--blood-red),var(--blood-mid));color:#fff!important;box-shadow:0 4px 12px rgba(192,57,43,.35);}
+    .sidebar .nav-link.active i{color:#fff!important;}
+    .sidebar-logo-area{padding:20px 20px 14px;border-bottom:1px solid #f0f0f0;margin-bottom:8px;}
+    .main-content{margin-left:var(--sidebar-width);padding:28px 32px;min-height:calc(100vh - 64px);}
+    .page-header{margin-bottom:28px;}
+    .page-header h1{font-weight:700;color:#1a1a2e;font-size:1.7rem;margin:0;}
+    .page-header p{color:#888;font-size:.93rem;margin:4px 0 0;}
+    .card{border:none;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.06);background:#fff;}
+    .card-header{background:none;border-bottom:1px solid #f0f0f0;font-weight:700;color:#1a1a2e;padding:18px 22px;border-radius:16px 16px 0 0!important;}
+    .stat-card{border-radius:16px;padding:22px 24px;color:#fff;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.15);}
+    .stat-card .stat-icon{position:absolute;right:18px;top:50%;transform:translateY(-50%);opacity:.2;font-size:4rem;}
+    .stat-card .stat-value{font-size:2.4rem;font-weight:800;line-height:1;}
+    .stat-card .stat-label{font-size:.85rem;opacity:.85;margin-top:4px;font-weight:500;}
+    .stat-red{background:linear-gradient(135deg,#c0392b,#e74c3c);}
+    .stat-orange{background:linear-gradient(135deg,#e67e22,#f39c12);}
+    .stat-green{background:linear-gradient(135deg,#27ae60,#2ecc71);}
+    .stat-blue{background:linear-gradient(135deg,#2980b9,#3498db);}
+    .stat-purple{background:linear-gradient(135deg,#8e44ad,#9b59b6);}
+    .blood-group-badge{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--blood-red),var(--blood-mid));color:#fff;font-weight:800;font-size:.88rem;box-shadow:0 3px 10px rgba(192,57,43,.35);}
+    .badge-status{padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;}
+    .status-pending{background:#fff8e1;color:#e65100;}
+    .status-approved{background:#e8f5e9;color:#1b5e20;}
+    .status-rejected{background:#ffebee;color:#b71c1c;}
+    .status-fulfilled{background:#e3f2fd;color:#0d47a1;}
+    .urgency-critical{color:#c0392b;font-weight:700;}
+    .urgency-urgent{color:#e67e22;font-weight:600;}
+    .urgency-normal{color:#27ae60;}
+    .btn-blood{background:linear-gradient(135deg,var(--blood-red),var(--blood-mid));color:#fff;border:none;font-weight:600;border-radius:10px;padding:9px 20px;box-shadow:0 4px 12px rgba(192,57,43,.3);transition:.2s;}
+    .btn-blood:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(192,57,43,.4);color:#fff;}
+    .btn-outline-blood{border:2px solid var(--blood-red);color:var(--blood-red);font-weight:600;border-radius:10px;padding:8px 20px;transition:.2s;}
+    .btn-outline-blood:hover{background:var(--blood-red);color:#fff;}
+    .table{border-collapse:separate;border-spacing:0;}
+    .table thead th{background:#f8f9fc;font-weight:700;color:#555;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;border:none;padding:14px 16px;}
+    .table tbody tr{transition:.15s;}
+    .table tbody tr:hover{background:#fdf5f5;}
+    .table tbody td{border-color:#f0f0f0;padding:14px 16px;vertical-align:middle;color:#333;}
+    .alert{border:none;border-radius:12px;font-weight:500;}
+    .form-control,.form-select{border-radius:10px;border:1.5px solid #e8e8e8;padding:10px 14px;font-size:.93rem;transition:.2s;}
+    .form-control:focus,.form-select:focus{border-color:var(--blood-red);box-shadow:0 0 0 3px rgba(192,57,43,.1);}
+    .form-label{font-weight:600;font-size:.88rem;color:#444;margin-bottom:6px;}
+    .empty-state{text-align:center;padding:60px 20px;color:#aaa;}
+    .fade-in{animation:fadeIn .4s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:#f8f8f8;}
+    ::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--blood-red);}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%);transition:.3s;}.sidebar.open{transform:translateX(0);}.main-content{margin-left:0;padding:20px 16px;}.sidebar-toggle{display:block!important;}}
+    .sidebar-toggle{display:none;}
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fixed-top">
+  <a class="navbar-brand" href="{% url 'home' %}">
+    <svg width="32" height="40" viewBox="0 0 40 50" fill="none"><path d="M20 2C20 2,4 22,4 33C4 42.3,11.2 48,20 48C28.8 48,36 42.3,36 33C36 22,20 2,20 2Z" fill="rgba(255,255,255,0.9)"/><path d="M20 10C20 10,9 26,9 33C9 38.5,14 43,20 43" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/></svg>
+    BloodLife
+  </a>
+  <button class="btn btn-link sidebar-toggle text-white ms-2" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="ms-auto d-flex align-items-center gap-3">
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="nav-link d-none d-md-block"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+      <div class="dropdown">
+        <div class="user-badge dropdown-toggle" data-bs-toggle="dropdown">
+          <div class="user-avatar">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
+          <span class="d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span>
+          {% if user.role == 'admin' %}<span class="badge bg-warning text-dark" style="font-size:.65rem;">Admin</span>{% endif %}
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user-circle me-2 text-muted"></i>My Profile</a></li>
+          <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt me-2 text-muted"></i>Dashboard</a></li>
+          {% if user.role == 'admin' %}<li><a class="dropdown-item" href="{% url 'admin_user_management' %}"><i class="fas fa-users-cog me-2 text-muted"></i>User Management</a></li>{% endif %}
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+        </ul>
+      </div>
+    {% else %}
+      <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+      <a href="{% url 'register' %}" class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;">Register</a>
+    {% endif %}
+  </div>
+</nav>
+<div style="height:64px;"></div>
+<div class="d-flex">
+  {% if user.is_authenticated %}
+  <nav class="sidebar">
+    <div class="sidebar-logo-area">
+      <div class="d-flex align-items-center gap-3">
+        <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--blood-red),var(--blood-mid));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:1.1rem;flex-shrink:0;">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:#222;">{{ user.get_full_name|default:user.username }}</div>
+          <div style="font-size:.75rem;color:#999;">
+            {% if user.role == 'admin' %}<span style="color:var(--blood-red);font-weight:600;"><i class="fas fa-shield-alt me-1"></i>Administrator</span>
+            {% else %}<span style="color:#27ae60;"><i class="fas fa-heart me-1"></i>Donor</span>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-section">Navigation</div>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link {% if 'donation' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'donation_list' %}"><i class="fas fa-tint"></i>Donations</a></li>
+      <li class="nav-item"><a class="nav-link {% if 'request' in request.resolver_match.url_name and 'approve' not in request.resolver_match.url_name %}active{% endif %}" href="{% url 'request_list' %}"><i class="fas fa-hand-holding-heart"></i>Blood Requests</a></li>
+      <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'donor_list' %}active{% endif %}" href="{% url 'donor_list' %}"><i class="fas fa-users"></i>Find Donors</a></li>
+      <li class="nav-item"><a class="nav-link {% if 'blood_bank_list' == request.resolver_match.url_name %}active{% endif %}" href="{% url 'blood_bank_list' %}"><i class="fas fa-hospital"></i>Blood Banks</a></li>
+    </ul>
+    {% if user.role == 'admin' %}
+    <div class="sidebar-section">Admin Panel</div>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link {% if 'user_management' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_user_management' %}"><i class="fas fa-users-cog"></i>User Management</a></li>
+      <li class="nav-item"><a class="nav-link {% if 'blood_bank_manage' == request.resolver_match.url_name %}active{% endif %}" href="{% url 'blood_bank_manage' %}"><i class="fas fa-hospital-alt"></i>Manage Banks</a></li>
+      <li class="nav-item"><a class="nav-link" href="/admin/" target="_blank"><i class="fas fa-tools"></i>Django Admin</a></li>
+    </ul>
+    {% endif %}
+    <div class="sidebar-section">Account</div>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}"><i class="fas fa-user-circle"></i>My Profile</a></li>
+      <li class="nav-item"><a class="nav-link text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    </ul>
+    <div style="margin:16px 16px 0;background:linear-gradient(135deg,#fdecea,#fce4e4);border-radius:12px;padding:16px;">
+      <div style="font-weight:700;font-size:.82rem;color:var(--blood-red);margin-bottom:10px;"><i class="fas fa-bolt me-1"></i>Quick Actions</div>
+      <a href="{% url 'donation_create' %}" class="btn btn-blood btn-sm w-100 mb-2" style="font-size:.8rem;"><i class="fas fa-plus me-1"></i>Donate Blood</a>
+      <a href="{% url 'request_create' %}" class="btn btn-outline-blood btn-sm w-100" style="font-size:.8rem;"><i class="fas fa-hand-holding-heart me-1"></i>Request Blood</a>
+    </div>
+  </nav>
+  {% endif %}
+  <main class="{% if user.is_authenticated %}main-content{% else %}w-100{% endif %} fade-in">
+    {% if messages %}
+      <div style="{% if not user.is_authenticated %}max-width:900px;margin:0 auto 20px;{% else %}margin-bottom:20px;{% endif %}">
+        {% for msg in messages %}
+          <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{% if msg.tags == 'success' %}check-circle{% elif msg.tags == 'error' or msg.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+            {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>setTimeout(()=>{document.querySelectorAll('.alert').forEach(a=>{try{new bootstrap.Alert(a).close();}catch(e){}});},5000);</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

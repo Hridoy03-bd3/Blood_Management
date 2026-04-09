@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block title %}BloodLife — Save Lives, Donate Blood{% endblock %}
+{% block content %}
+<style>
+  .hero { background: linear-gradient(135deg, #c0392b 0%, #7b241c 100%); min-height: 100vh; display: flex; align-items: center; margin: -28px -32px 0; padding: 60px 60px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -50%; right: -10%; width: 600px; height: 600px; background: rgba(255,255,255,.05); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; bottom: -30%; right: 10%; width: 400px; height: 400px; background: rgba(255,255,255,.04); border-radius: 50%; }
+  .hero-text { color: #fff; z-index: 2; position: relative; }
+  .hero-text h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .hero-text h1 span { color: #ffcdd2; }
+  .hero-text p { font-size: 1.15rem; opacity: .85; max-width: 500px; line-height: 1.7; }
+  .hero-graphic { z-index: 2; position: relative; display: flex; align-items: center; justify-content: center; }
+  .blood-drop-hero { animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+  .stats-strip { background: #fff; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,.1); padding: 32px 40px; margin: -50px 40px 60px; position: relative; z-index: 10; }
+  .stat-item { text-align: center; }
+  .stat-item .num { font-size: 2.2rem; font-weight: 800; color: var(--blood-red); }
+  .stat-item .lbl { font-size: .85rem; color: #888; font-weight: 500; margin-top: 4px; }
+  .section-title { font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: 8px; }
+  .section-sub { color: #888; font-size: 1rem; margin-bottom: 40px; }
+  .feature-card { border-radius: 20px; padding: 32px 28px; height: 100%; border: none; box-shadow: 0 4px 20px rgba(0,0,0,.06); transition: .3s; }
+  .feature-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+  .feature-icon { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 20px; }
+  .blood-type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+  .blood-type-item { background: #fff; border-radius: 16px; padding: 20px 12px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: .2s; }
+  .blood-type-item:hover { box-shadow: 0 6px 24px rgba(192,57,43,.2); }
+  .blood-type-item .type { font-size: 1.6rem; font-weight: 800; color: var(--blood-red); }
+  .blood-type-item .units { font-size: .8rem; color: #888; margin-top: 4px; }
+  .cta-section { background: linear-gradient(135deg,#c0392b,#7b241c); border-radius: 24px; padding: 60px 40px; text-align: center; color: #fff; margin: 60px 0; }
+  .step-card { text-align: center; padding: 30px 20px; }
+  .step-num { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,var(--blood-red),var(--blood-mid)); color: #fff; font-weight: 800; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 6px 20px rgba(192,57,43,.4); }
+  .footer { background: #1a1a2e; color: #ccc; padding: 40px; text-align: center; margin: 0 -32px -28px; }
+</style>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="row w-100 align-items-center">
+    <div class="col-lg-6 hero-text">
+      <div class="badge mb-3" style="background:rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:20px;font-size:.85rem;"><i class="fas fa-heartbeat me-2"></i>Saving Lives Together</div>
+      <h1>Every Drop <span>Counts.</span><br>Donate Blood,<br>Save Lives.</h1>
+      <p>Join our community of life-savers. Connect donors with patients, manage blood banks, and track donations — all in one platform built for Bangladesh.</p>
+      <div class="d-flex gap-3 mt-4 flex-wrap">
+        <a href="{% url 'register' %}" class="btn btn-lg" style="background:#fff;color:var(--blood-red);font-weight:700;border-radius:12px;padding:14px 32px;box-shadow:0 6px 20px rgba(0,0,0,.2);">
+          <i class="fas fa-heart me-2"></i>Start Donating
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);font-weight:600;border-radius:12px;padding:14px 32px;">
+          <i class="fas fa-sign-in-alt me-2"></i>Login
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-6 hero-graphic mt-5 mt-lg-0">
+      <svg class="blood-drop-hero" viewBox="0 0 300 380" fill="none" xmlns="http://www.w3.org/2000/svg" width="320" height="380">
+        <!-- Main drop -->
+        <path d="M150 20 C150 20, 40 140, 40 220 C40 295, 90 350, 150 350 C210 350, 260 295, 260 220 C260 140, 150 20, 150 20Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+        <!-- Inner drop -->
+        <path d="M150 60 C150 60, 75 155, 75 215 C75 270, 108 315, 150 315 C192 315, 225 270, 225 215 C225 155, 150 60, 150 60Z" fill="rgba(255,255,255,0.12)"/>
+        <!-- Shine -->
+        <ellipse cx="120" cy="150" rx="20" ry="35" fill="rgba(255,255,255,0.2)" transform="rotate(-20 120 150)"/>
+        <!-- Cross symbol -->
+        <rect x="130" y="195" width="40" height="12" rx="6" fill="rgba(255,255,255,0.7)"/>
+        <rect x="145" y="180" width="12" height="40" rx="6" fill="rgba(255,255,255,0.7)"/>
+        <!-- Pulse line -->
+        <polyline points="40,260 70,260 90,230 110,285 130,245 155,265 175,250 200,265 230,260 260,260" stroke="rgba(255,255,255,0.6)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="row g-4">
+    <div class="col-6 col-md-3 stat-item">
+      <div class="num">{{ blood_inventory.values|length }}+</div>
+      <div class="lbl"><i class="fas fa-tint me-1" style="color:var(--blood-red)"></i>Blood Types</div>
+    </div>
+    <div class="col-6 col-md-3 stat-item">
+      <div class="num">24/7</div>
+      <div class="lbl"><i class="fas fa-clock me-1" style="color:#e67e22"></i>Emergency Support</div>
+    </div>
+    <div class="col-6 col-md-3 stat-item">
+      <div class="num">100%</div>
+      <div class="lbl"><i class="fas fa-shield-alt me-1" style="color:#27ae60"></i>Verified Donors</div>
+    </div>
+    <div class="col-6 col-md-3 stat-item">
+      <div class="num">BD</div>
+      <div class="lbl"><i class="fas fa-map-marker-alt me-1" style="color:#2980b9"></i>Bangladesh Wide</div>
+    </div>
+  </div>
+</div>
+
+<!-- BLOOD INVENTORY -->
+<div style="padding: 0 40px 60px;">
+  <div class="text-center mb-4">
+    <h2 class="section-title">Live Blood Inventory</h2>
+    <p class="section-sub">Real-time availability across all blood banks</p>
+  </div>
+  <div class="blood-type-grid">
+    {% for group, units in blood_inventory.items %}
+    <div class="blood-type-item">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 4px 14px rgba(192,57,43,.35);">{{ group }}</div>
+      <div class="type">{{ units }}</div>
+      <div class="units">units available</div>
+      <div style="margin-top:8px;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
+        <div style="width:{% if units > 50 %}90%{% elif units > 20 %}60%{% elif units > 0 %}30%{% else %}5%{% endif %};height:100%;background:linear-gradient(90deg,#c0392b,#e74c3c);border-radius:3px;"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div style="background:#fff;padding:60px 40px;margin:0 -32px;">
+  <div class="text-center mb-5">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Simple steps to save a life</p>
+  </div>
+  <div class="row g-4 justify-content-center">
+    {% for step in "123" %}
+    <div class="col-md-4">
+      <div class="step-card">
+        {% if forloop.counter == 1 %}
+        <div class="step-num">1</div>
+        <h5 style="font-weight:700;color:#1a1a2e;margin-bottom:10px;">Register</h5>
+        <p style="color:#888;font-size:.93rem;">Create your free account and complete your donor profile with blood group and location.</p>
+        {% elif forloop.counter == 2 %}
+        <div class="step-num">2</div>
+        <h5 style="font-weight:700;color:#1a1a2e;margin-bottom:10px;">Schedule Donation</h5>
+        <p style="color:#888;font-size:.93rem;">Choose a blood bank near you, pick a date, and submit your donation request.</p>
+        {% else %}
+        <div class="step-num">3</div>
+        <h5 style="font-weight:700;color:#1a1a2e;margin-bottom:10px;">Save Lives</h5>
+        <p style="color:#888;font-size:.93rem;">Your donation gets verified by admin and inventory is updated to help patients in need.</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div style="padding: 60px 40px;">
+  <div class="text-center mb-5">
+    <h2 class="section-title">Why Choose BloodLife?</h2>
+    <p class="section-sub">Everything you need in one platform</p>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#fdecea;color:var(--blood-red);"><i class="fas fa-map-marked-alt"></i></div>
+        <h5 style="font-weight:700;margin-bottom:10px;">Locate Blood Banks</h5>
+        <p style="color:#888;font-size:.9rem;">Find blood banks across Bangladesh with real-time inventory information.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#e8f5e9;color:#27ae60;"><i class="fas fa-shield-alt"></i></div>
+        <h5 style="font-weight:700;margin-bottom:10px;">Verified Donors</h5>
+        <p style="color:#888;font-size:.9rem;">All donors are verified by admins ensuring safe and reliable blood supply.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#e3f2fd;color:#2980b9;"><i class="fas fa-bolt"></i></div>
+        <h5 style="font-weight:700;margin-bottom:10px;">Emergency Requests</h5>
+        <p style="color:#888;font-size:.9rem;">Mark requests as critical for urgent blood needs with priority handling.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div style="padding: 0 40px 60px;">
+  <div class="cta-section">
+    <svg viewBox="0 0 80 80" width="80" height="80" style="margin-bottom:20px;opacity:.9;">
+      <path d="M40 8C40 8,12 30,12 48C12 62,25 72,40 72C55 72,68 62,68 48C68 30,40 8,40 8Z" fill="rgba(255,255,255,0.3)"/>
+      <path d="M40 20C40 20,22 38,22 48C22 58,30 65,40 65C50 65,58 58,58 48C58 38,40 20,40 20Z" fill="rgba(255,255,255,0.2)"/>
+    </svg>
+    <h2 style="font-size:2.2rem;font-weight:800;margin-bottom:12px;">Ready to Save a Life?</h2>
+    <p style="opacity:.85;font-size:1rem;max-width:500px;margin:0 auto 30px;">Join thousands of donors in Bangladesh making a difference. Your blood can save up to 3 lives.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{% url 'register' %}" class="btn btn-lg" style="background:#fff;color:var(--blood-red);font-weight:700;border-radius:12px;padding:14px 36px;">
+        <i class="fas fa-heart me-2"></i>Become a Donor
+      </a>
+      <a href="{% url 'login' %}" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);font-weight:600;border-radius:12px;padding:14px 36px;">
+        <i class="fas fa-sign-in-alt me-2"></i>Login Now
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+    <svg width="24" height="30" viewBox="0 0 40 50" fill="none"><path d="M20 2C20 2,4 22,4 33C4 42.3,11.2 48,20 48C28.8 48,36 42.3,36 33C36 22,20 2,20 2Z" fill="rgba(255,255,255,0.6)"/></svg>
+    <span style="font-weight:800;color:#fff;font-size:1.1rem;">BloodLife</span>
+  </div>
+  <p style="margin:0;font-size:.85rem;opacity:.6;">© 2025 BloodLife — Blood Management System for Bangladesh. All rights reserved.</p>
+</div>
+{% endblock %}

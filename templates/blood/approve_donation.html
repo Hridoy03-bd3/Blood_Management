@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Review Donation - BloodMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="page-header">
+      <h2><i class="fas fa-check-circle me-2 text-danger"></i>Review Donation</h2>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light fw-semibold">Donation Information</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><span class="text-muted small">Donor</span><div class="fw-semibold">{{ donation.donor.get_full_name|default:donation.donor.username }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Blood Group</span><div><span class="badge-blood">{{ donation.blood_group }}</span></div></div>
+          <div class="col-md-6"><span class="text-muted small">Blood Bank</span><div class="fw-semibold">{{ donation.blood_bank.name }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Donation Date</span><div>{{ donation.donation_date }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Units</span><div>{{ donation.units }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Current Status</span><div><span class="badge status-{{ donation.status }}">{{ donation.get_status_display }}</span></div></div>
+          {% if donation.notes %}<div class="col-12"><span class="text-muted small">Donor Notes</span><div>{{ donation.notes }}</div></div>{% endif %}
+        </div>
+      </div>
+    </div>
+    {% if donation.status == 'pending' %}
+    <div class="card">
+      <div class="card-header bg-danger text-white fw-semibold">Admin Decision</div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Remarks (optional)</label>
+            <textarea name="remarks" class="form-control" rows="3" placeholder="Add any remarks for this decision..."></textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" name="action" value="approve" class="btn btn-success px-4">
+              <i class="fas fa-check me-2"></i>Approve Donation
+            </button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger px-4">
+              <i class="fas fa-times me-2"></i>Reject
+            </button>
+            <a href="{% url 'donation_list' %}" class="btn btn-outline-secondary">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">This donation has already been <strong>{{ donation.status }}</strong>.</div>
+    <a href="{% url 'donation_list' %}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

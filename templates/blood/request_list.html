@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Blood Requests - BloodMS{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <h2><i class="fas fa-file-medical me-2 text-danger"></i>
+    {% if request.user.role == 'admin' %}All Blood Requests{% else %}My Blood Requests{% endif %}
+  </h2>
+  <a href="{% url 'request_create' %}" class="btn btn-blood"><i class="fas fa-plus me-2"></i>New Request</a>
+</div>
+{% if request.user.role == 'admin' %}
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <select name="status" class="form-select form-select-sm">
+          <option value="">All Status</option>
+          <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Approved</option>
+          <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+          <option value="fulfilled" {% if request.GET.status == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
+        </select>
+      </div>
+      <div class="col-md-4 d-flex gap-2">
+        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-filter me-1"></i>Filter</button>
+        <a href="{% url 'request_list' %}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            {% if request.user.role == 'admin' %}<th>Requester</th>{% endif %}
+            <th>Patient</th>
+            <th>Blood Group</th>
+            <th>Hospital</th>
+            <th>Units</th>
+            <th>Urgency</th>
+            <th>Status</th>
+            {% if request.user.role == 'admin' %}<th>Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in requests %}
+          <tr>
+            <td class="text-muted">{{ forloop.counter }}</td>
+            {% if request.user.role == 'admin' %}
+            <td>{{ r.requester.get_full_name|default:r.requester.username }}</td>
+            {% endif %}
+            <td><strong>{{ r.patient_name }}</strong></td>
+            <td><span class="badge-blood">{{ r.blood_group }}</span></td>
+            <td>{{ r.hospital_name }}<br><span class="text-muted small">{{ r.hospital_city }}</span></td>
+            <td>{{ r.units_needed }}</td>
+            <td><span class="urgency-{{ r.urgency }}">{{ r.get_urgency_display }}</span></td>
+            <td><span class="badge status-{{ r.status }} rounded-pill px-3">{{ r.get_status_display }}</span></td>
+            {% if request.user.role == 'admin' %}
+            <td>
+              {% if r.status == 'pending' or r.status == 'approved' %}
+              <a href="{% url 'approve_request' r.pk %}" class="btn btn-sm btn-outline-danger">Review</a>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr><td colspan="9" class="text-center text-muted py-4">
+            <i class="fas fa-inbox fa-2x mb-2 d-block opacity-50"></i>No requests found.
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

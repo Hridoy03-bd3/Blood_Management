@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Donations - BloodMS{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <h2><i class="fas fa-hand-holding-heart me-2 text-danger"></i>
+    {% if request.user.role == 'admin' %}All Donations{% else %}My Donations{% endif %}
+  </h2>
+  {% if request.user.role == 'donor' %}
+  <a href="{% url 'donation_create' %}" class="btn btn-blood"><i class="fas fa-plus me-2"></i>New Donation</a>
+  {% endif %}
+</div>
+{% if request.user.role == 'admin' %}
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold mb-1">Filter by Blood Group</label>
+        <select name="blood_group" class="form-select form-select-sm">
+          <option value="">All Groups</option>
+          {% for code, label in blood_groups %}
+          <option value="{{ code }}" {% if request.GET.blood_group == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold mb-1">Filter by Status</label>
+        <select name="status" class="form-select form-select-sm">
+          <option value="">All Status</option>
+          <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Approved</option>
+          <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-4 d-flex gap-2">
+        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-filter me-1"></i>Filter</button>
+        <a href="{% url 'donation_list' %}" class="btn btn-sm btn-outline-secondary">Clear</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            {% if request.user.role == 'admin' %}<th>Donor</th>{% endif %}
+            <th>Blood Group</th>
+            <th>Blood Bank</th>
+            <th>Date</th>
+            <th>Units</th>
+            <th>Status</th>
+            {% if request.user.role == 'admin' %}<th>Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in donations %}
+          <tr>
+            <td class="text-muted">{{ forloop.counter }}</td>
+            {% if request.user.role == 'admin' %}
+            <td><strong>{{ d.donor.get_full_name|default:d.donor.username }}</strong><br><span class="text-muted small">{{ d.donor.email }}</span></td>
+            {% endif %}
+            <td><span class="badge-blood">{{ d.blood_group }}</span></td>
+            <td>{{ d.blood_bank.name|default:"N/A" }}</td>
+            <td>{{ d.donation_date }}</td>
+            <td>{{ d.units }}</td>
+            <td><span class="badge status-{{ d.status }} rounded-pill px-3 py-1">{{ d.get_status_display }}</span></td>
+            {% if request.user.role == 'admin' %}
+            <td>
+              {% if d.status == 'pending' %}
+              <a href="{% url 'approve_donation' d.pk %}" class="btn btn-sm btn-outline-danger">Review</a>
+              {% else %}
+              <span class="text-muted small">{{ d.admin_remarks|default:"—" }}</span>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">
+            <i class="fas fa-inbox fa-2x mb-2 d-block text-muted opacity-50"></i>No donations found.
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

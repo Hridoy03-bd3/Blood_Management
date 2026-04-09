@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - BloodMS{% endblock %}
+{% block content %}
+<div class="page-header"><h2><i class="fas fa-user-edit me-2 text-danger"></i>Edit Profile</h2></div>
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card text-center p-4">
+      {% if user.role == 'donor' and user.donor_profile.profile_photo %}
+      <img src="{{ user.donor_profile.profile_photo.url }}" class="rounded-circle mx-auto d-block mb-3" width="100" height="100" style="object-fit:cover">
+      {% else %}
+      <div class="blood-group-badge mx-auto mb-3" style="width:80px;height:80px;font-size:1.5rem">
+        {% if user.role == 'donor' %}{{ user.donor_profile.blood_group }}{% else %}<i class="fas fa-user-shield"></i>{% endif %}
+      </div>
+      {% endif %}
+      <h5 class="fw-bold">{{ user.get_full_name|default:user.username }}</h5>
+      <p class="text-muted">{{ user.role|capfirst }}</p>
+      {% if user.role == 'donor' %}
+      <div class="mt-2">
+        <span class="badge bg-{% if user.donor_profile.is_available %}success{% else %}secondary{% endif %}">
+          {% if user.donor_profile.is_available %}Available{% else %}Not Available{% endif %}
+        </span>
+      </div>
+      <div class="mt-3 p-3 bg-light rounded">
+        <div class="fw-bold text-danger fs-4">{{ user.donor_profile.total_donations }}</div>
+        <div class="text-muted small">Total Donations</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header bg-danger text-white"><i class="fas fa-edit me-2"></i>Update Information</div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name</label>
+              <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name</label>
+              <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" name="email" class="form-control" value="{{ user.email }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              <input type="text" name="phone" class="form-control" value="{{ user.phone }}">
+            </div>
+            {% if user.role == 'donor' %}
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Blood Group</label>
+              <select name="blood_group" class="form-select">
+                {% for code, label in blood_groups %}
+                <option value="{{ code }}" {% if user.donor_profile.blood_group == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="">Select</option>
+                <option value="male" {% if user.donor_profile.gender == 'male' %}selected{% endif %}>Male</option>
+                <option value="female" {% if user.donor_profile.gender == 'female' %}selected{% endif %}>Female</option>
+                <option value="other" {% if user.donor_profile.gender == 'other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Date of Birth</label>
+              <input type="date" name="date_of_birth" class="form-control" value="{{ user.donor_profile.date_of_birth|default:'' }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">City</label>
+              <input type="text" name="city" class="form-control" value="{{ user.donor_profile.city }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Area</label>
+              <input type="text" name="area" class="form-control" value="{{ user.donor_profile.area }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Address</label>
+              <textarea name="address" class="form-control" rows="2">{{ user.donor_profile.address }}</textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Bio</label>
+              <textarea name="bio" class="form-control" rows="2">{{ user.donor_profile.bio }}</textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Profile Photo</label>
+              <input type="file" name="profile_photo" class="form-control" accept="image/*">
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input type="checkbox" name="is_available" class="form-check-input" id="available" {% if user.donor_profile.is_available %}checked{% endif %}>
+                <label class="form-check-label" for="available">I am available to donate</label>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-blood mt-4 px-4">
+            <i class="fas fa-save me-2"></i>Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

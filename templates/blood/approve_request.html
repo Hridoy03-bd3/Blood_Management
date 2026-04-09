@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Review Request - BloodMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="page-header">
+      <h2><i class="fas fa-file-medical me-2 text-danger"></i>Review Blood Request</h2>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-light fw-semibold">Request Details</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><span class="text-muted small">Patient</span><div class="fw-semibold">{{ blood_request.patient_name }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Blood Group</span><div><span class="badge-blood">{{ blood_request.blood_group }}</span></div></div>
+          <div class="col-md-6"><span class="text-muted small">Hospital</span><div>{{ blood_request.hospital_name }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">City</span><div>{{ blood_request.hospital_city|default:"—" }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Units Needed</span><div>{{ blood_request.units_needed }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Urgency</span><div class="urgency-{{ blood_request.urgency }}">{{ blood_request.get_urgency_display }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Contact</span><div>{{ blood_request.contact_number }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Required By</span><div>{{ blood_request.required_date|default:"ASAP" }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Requested By</span><div>{{ blood_request.requester.get_full_name|default:blood_request.requester.username }}</div></div>
+          <div class="col-md-6"><span class="text-muted small">Current Status</span><div><span class="badge status-{{ blood_request.status }}">{{ blood_request.get_status_display }}</span></div></div>
+          {% if blood_request.reason %}<div class="col-12"><span class="text-muted small">Reason</span><div>{{ blood_request.reason }}</div></div>{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-danger text-white fw-semibold">Update Status</div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Admin Remarks</label>
+            <textarea name="remarks" class="form-control" rows="3" placeholder="Add remarks...">{{ blood_request.admin_remarks }}</textarea>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" name="action" value="approve" class="btn btn-success"><i class="fas fa-check me-1"></i>Approve</button>
+            <button type="submit" name="action" value="fulfill" class="btn btn-primary"><i class="fas fa-check-double me-1"></i>Mark Fulfilled</button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger"><i class="fas fa-times me-1"></i>Reject</button>
+            <a href="{% url 'request_list' %}" class="btn btn-outline-secondary">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

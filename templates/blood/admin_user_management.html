@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}User Management — BloodLife Admin{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <h1><i class="fas fa-users-cog me-2" style="color:var(--blood-red)"></i>User Management</h1>
+    <p>View, manage, and control all registered users.</p>
+  </div>
+  <div class="d-flex gap-2">
+    <span class="badge" style="background:var(--blood-light);color:var(--blood-red);padding:8px 14px;border-radius:10px;font-size:.85rem;font-weight:600;"><i class="fas fa-users me-1"></i>{{ users.count }} Total Users</span>
+  </div>
+</div>
+
+<!-- STATS ROW -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-blue" style="padding:16px 18px;">
+      <div class="stat-value" style="font-size:1.8rem;">{{ total_users }}</div>
+      <div class="stat-label">All Users</div>
+      <div class="stat-icon" style="font-size:2.5rem;"><i class="fas fa-users"></i></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-red" style="padding:16px 18px;">
+      <div class="stat-value" style="font-size:1.8rem;">{{ admin_count }}</div>
+      <div class="stat-label">Admins</div>
+      <div class="stat-icon" style="font-size:2.5rem;"><i class="fas fa-shield-alt"></i></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-green" style="padding:16px 18px;">
+      <div class="stat-value" style="font-size:1.8rem;">{{ donor_count }}</div>
+      <div class="stat-label">Donors</div>
+      <div class="stat-icon" style="font-size:2.5rem;"><i class="fas fa-heart"></i></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-orange" style="padding:16px 18px;">
+      <div class="stat-value" style="font-size:1.8rem;">{{ active_count }}</div>
+      <div class="stat-label">Active Users</div>
+      <div class="stat-icon" style="font-size:2.5rem;"><i class="fas fa-check-circle"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="card mb-4">
+  <div class="card-body py-3">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Search User</label>
+        <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Name, username, or email...">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+          <option value="">All Roles</option>
+          <option value="admin" {% if request.GET.role == 'admin' %}selected{% endif %}>Admin</option>
+          <option value="donor" {% if request.GET.role == 'donor' %}selected{% endif %}>Donor</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          <option value="">All Status</option>
+          <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-blood w-100"><i class="fas fa-search me-1"></i>Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- USER TABLE -->
+<div class="card">
+  <div class="card-header">All Users</div>
+  <div class="card-body p-0">
+    {% if users %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Blood Group</th>
+            <th>Joined</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,{% if u.role == 'admin' %}#c0392b,#e74c3c{% else %}#2980b9,#3498db{% endif %});display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:.85rem;flex-shrink:0;">
+                  {{ u.first_name|first|upper }}{{ u.last_name|first|upper }}
+                </div>
+                <div>
+                  <div style="font-weight:600;color:#222;">{{ u.get_full_name|default:"—" }}</div>
+                  <div style="font-size:.78rem;color:#aaa;">{{ u.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-weight:500;color:#555;">{{ u.username }}</td>
+            <td>
+              {% if u.role == 'admin' %}
+                <span class="badge-status" style="background:#fdecea;color:var(--blood-red);padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;"><i class="fas fa-shield-alt me-1"></i>Admin</span>
+              {% else %}
+                <span class="badge-status" style="background:#e8f5e9;color:#1b5e20;padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;"><i class="fas fa-heart me-1"></i>Donor</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if u.role == 'donor' %}
+                {% if u.donor_profile.blood_group %}
+                  <span class="blood-group-badge" style="width:36px;height:36px;font-size:.72rem;">{{ u.donor_profile.blood_group }}</span>
+                {% else %}<span style="color:#ccc;">—</span>{% endif %}
+              {% else %}<span style="color:#ccc;">—</span>{% endif %}
+            </td>
+            <td style="color:#888;font-size:.85rem;">{{ u.date_joined|date:"M d, Y" }}</td>
+            <td>
+              {% if u.is_active %}
+                <span class="badge-status status-approved"><i class="fas fa-circle me-1" style="font-size:.5rem;vertical-align:middle;"></i>Active</span>
+              {% else %}
+                <span class="badge-status status-rejected"><i class="fas fa-circle me-1" style="font-size:.5rem;vertical-align:middle;"></i>Inactive</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="d-flex gap-1 flex-wrap">
+                <a href="{% url 'admin_user_detail' u.pk %}" class="btn btn-sm btn-outline-blood" style="padding:4px 10px;font-size:.75rem;"><i class="fas fa-eye"></i></a>
+                {% if u != request.user %}
+                  <form method="post" action="{% url 'admin_toggle_user' u.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm {% if u.is_active %}btn-warning{% else %}btn-success{% endif %}" style="padding:4px 10px;font-size:.75rem;" title="{% if u.is_active %}Deactivate{% else %}Activate{% endif %}">
+                      <i class="fas fa-{% if u.is_active %}ban{% else %}check{% endif %}"></i>
+                    </button>
+                  </form>
+                  <form method="post" action="{% url 'admin_promote_user' u.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-info" style="padding:4px 10px;font-size:.75rem;color:#fff;" title="{% if u.role == 'admin' %}Demote to Donor{% else %}Promote to Admin{% endif %}">
+                      <i class="fas fa-{% if u.role == 'admin' %}arrow-down{% else %}arrow-up{% endif %}"></i>
+                    </button>
+                  </form>
+                  <form method="post" action="{% url 'admin_delete_user' u.pk %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to permanently delete user \'{{ u.username }}\'? This action cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger" style="padding:4px 10px;font-size:.75rem;" title="Delete User">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                {% else %}
+                  <span style="font-size:.75rem;color:#aaa;padding:4px 8px;">(You)</span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-users fa-3x mb-3" style="color:#ddd;"></i>
+      <h5>No users found</h5>
+      <p>Try adjusting your filters.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

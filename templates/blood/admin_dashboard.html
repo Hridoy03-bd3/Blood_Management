@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — BloodLife{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fas fa-tachometer-alt me-2" style="color:var(--blood-red)"></i>Admin Dashboard</h1>
+  <p>Welcome back, {{ user.get_full_name }}! Here's the system overview.</p>
+</div>
+
+<!-- STAT CARDS -->
+<div class="row g-4 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="stat-card stat-red">
+      <div class="stat-value">{{ total_donors }}</div>
+      <div class="stat-label">Total Donors</div>
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card stat-green">
+      <div class="stat-value">{{ available_donors }}</div>
+      <div class="stat-label">Available Now</div>
+      <div class="stat-icon"><i class="fas fa-heart"></i></div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card stat-orange">
+      <div class="stat-value">{{ pending_donations }}</div>
+      <div class="stat-label">Pending Donations</div>
+      <div class="stat-icon"><i class="fas fa-tint"></i></div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card stat-blue">
+      <div class="stat-value">{{ pending_requests }}</div>
+      <div class="stat-label">Pending Requests</div>
+      <div class="stat-icon"><i class="fas fa-hand-holding-heart"></i></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Blood Inventory -->
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center gap-2">
+        <svg width="18" height="22" viewBox="0 0 40 50"><path d="M20 2C20 2,4 22,4 33C4 42.3,11.2 48,20 48C28.8 48,36 42.3,36 33C36 22,20 2,20 2Z" fill="#c0392b"/></svg>
+        Blood Inventory
+      </div>
+      <div class="card-body p-3">
+        {% for group, units in blood_inventory.items %}
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="blood-group-badge" style="flex-shrink:0;width:38px;height:38px;font-size:.78rem;">{{ group }}</div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between mb-1">
+              <span style="font-size:.85rem;font-weight:600;color:#333;">Blood Group {{ group }}</span>
+              <span style="font-size:.85rem;font-weight:700;color:var(--blood-red);">{{ units }} units</span>
+            </div>
+            <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
+              <div style="width:{% if units > 100 %}95%{% elif units > 50 %}70%{% elif units > 20 %}45%{% elif units > 0 %}20%{% else %}3%{% endif %};height:100%;background:linear-gradient(90deg,#c0392b,#e74c3c);border-radius:3px;transition:.5s;"></div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions + Bank Count -->
+  <div class="col-lg-7">
+    <div class="row g-4">
+      <div class="col-12">
+        <div class="stat-card stat-purple" style="padding:20px 24px;">
+          <div class="stat-value">{{ total_banks }}</div>
+          <div class="stat-label">Active Blood Banks</div>
+          <div class="stat-icon"><i class="fas fa-hospital"></i></div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">Quick Actions</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-6"><a href="{% url 'donation_list' %}" class="btn btn-blood w-100 btn-sm"><i class="fas fa-tint me-1"></i>Review Donations</a></div>
+              <div class="col-6"><a href="{% url 'request_list' %}" class="btn btn-blood w-100 btn-sm"><i class="fas fa-hand-holding-heart me-1"></i>Blood Requests</a></div>
+              <div class="col-6"><a href="{% url 'admin_user_management' %}" class="btn btn-outline-blood w-100 btn-sm"><i class="fas fa-users-cog me-1"></i>Manage Users</a></div>
+              <div class="col-6"><a href="{% url 'blood_bank_manage' %}" class="btn btn-outline-blood w-100 btn-sm"><i class="fas fa-hospital-alt me-1"></i>Blood Banks</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECENT ACTIVITY -->
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        Recent Donations
+        <a href="{% url 'donation_list' %}" class="btn btn-sm btn-outline-blood">View All</a>
+      </div>
+      <div class="card-body p-0">
+        {% if recent_donations %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>Donor</th><th>Blood</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              {% for d in recent_donations %}
+              <tr>
+                <td><div style="font-weight:600;font-size:.88rem;">{{ d.donor.get_full_name }}</div><div style="font-size:.75rem;color:#aaa;">{{ d.created_at|date:"M d" }}</div></td>
+                <td><span class="blood-group-badge" style="width:34px;height:34px;font-size:.72rem;">{{ d.blood_group }}</span></td>
+                <td><span class="badge-status status-{{ d.status }}">{{ d.get_status_display }}</span></td>
+                <td>{% if d.status == 'pending' %}<a href="{% url 'approve_donation' d.pk %}" class="btn btn-blood btn-sm" style="padding:4px 10px;font-size:.75rem;">Review</a>{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="fas fa-tint fa-2x mb-3"></i><p>No donations yet.</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        Recent Blood Requests
+        <a href="{% url 'request_list' %}" class="btn btn-sm btn-outline-blood">View All</a>
+      </div>
+      <div class="card-body p-0">
+        {% if recent_requests %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>Patient</th><th>Blood</th><th>Urgency</th><th>Action</th></tr></thead>
+            <tbody>
+              {% for r in recent_requests %}
+              <tr>
+                <td><div style="font-weight:600;font-size:.88rem;">{{ r.patient_name }}</div><div style="font-size:.75rem;color:#aaa;">{{ r.hospital_name }}</div></td>
+                <td><span class="blood-group-badge" style="width:34px;height:34px;font-size:.72rem;">{{ r.blood_group }}</span></td>
+                <td><span class="urgency-{{ r.urgency }}"><i class="fas fa-{% if r.urgency == 'critical' %}exclamation-triangle{% elif r.urgency == 'urgent' %}exclamation-circle{% else %}circle{% endif %} me-1"></i>{{ r.get_urgency_display }}</span></td>
+                <td>{% if r.status == 'pending' %}<a href="{% url 'approve_request' r.pk %}" class="btn btn-blood btn-sm" style="padding:4px 10px;font-size:.75rem;">Review</a>{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><i class="fas fa-hand-holding-heart fa-2x mb-3"></i><p>No requests yet.</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

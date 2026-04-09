@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Choose Registration Type — BloodLife{% endblock %}
+{% block content %}
+<style>
+  .reg-wrapper{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 16px;background:linear-gradient(135deg,#fdecea 0%,#e8f5e9 100%);}
+  .reg-container{width:100%;max-width:900px;}
+  .reg-header{text-align:center;margin-bottom:50px;}
+  .reg-header h2{font-weight:800;font-size:2.2rem;color:#222;margin-bottom:12px;}
+  .reg-header p{font-size:1.05rem;color:#666;margin:0;}
+  
+  .reg-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:30px;margin-bottom:40px;}
+  
+  .reg-card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.08);transition:all 0.3s ease;border:2px solid transparent;}
+  .reg-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.15);}
+  
+  .reg-card.donor{border-color:#c0392b;}
+  .reg-card.donor:hover{border-color:#c0392b;background:linear-gradient(135deg,rgba(192,57,43,.02) 0%,rgba(192,57,43,.05) 100%);}
+  
+  .reg-card.bank{border-color:#2e7d32;}
+  .reg-card.bank:hover{border-color:#2e7d32;background:linear-gradient(135deg,rgba(46,125,50,.02) 0%,rgba(46,125,50,.05) 100%);}
+  
+  .card-icon{width:80px;height:80px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:2.5rem;}
+  
+  .donor .card-icon{background:#fdecea;color:#c0392b;}
+  .bank .card-icon{background:#e8f5e9;color:#2e7d32;}
+  
+  .card-body{padding:40px 30px;text-align:center;}
+  .card-body h3{font-weight:700;font-size:1.5rem;margin:0 0 12px;color:#222;}
+  .card-body p{color:#666;font-size:.95rem;line-height:1.6;margin-bottom:24px;}
+  
+  .card-features{text-align:left;margin:24px 0;padding-top:24px;border-top:1px solid #eee;list-style:none;padding-left:0;}
+  .card-features li{font-size:.9rem;color:#555;padding:8px 0;display:flex;align-items:center;}
+  .card-features li:before{content:"✓";margin-right:10px;font-weight:800;color:#2e7d32;font-size:1.1rem;}
+  
+  .reg-btn{width:100%;padding:12px 24px;font-size:1rem;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:all 0.3s ease;margin-top:20px;}
+  
+  .donor .reg-btn{background:#c0392b;color:#fff;}
+  .donor .reg-btn:hover{background:#a93226;box-shadow:0 6px 20px rgba(192,57,43,.3);}
+  
+  .bank .reg-btn{background:#2e7d32;color:#fff;}
+  .bank .reg-btn:hover{background:#1b5e20;box-shadow:0 6px 20px rgba(46,125,50,.3);}
+  
+  .login-link{text-align:center;margin-top:30px;color:#888;font-size:.95rem;}
+  .login-link a{color:#c0392b;font-weight:600;text-decoration:none;}
+  .login-link a:hover{text-decoration:underline;}
+  
+  @media(max-width:768px){
+    .reg-header h2{font-size:1.6rem;}
+  }
+</style>
+
+<div class="reg-wrapper">
+  <div class="reg-container">
+    <div class="reg-header">
+      <h2>Join BloodLife</h2>
+      <p>Choose your registration type to get started</p>
+    </div>
+
+    <div class="reg-options">
+      <!-- Donor Registration Card -->
+      <div class="reg-card donor">
+        <div class="card-body">
+          <div class="card-icon">
+            <i class="fas fa-heart"></i>
+          </div>
+          <h3>Donation</h3>
+          <p>Register as a blood donor and become a lifesaver</p>
+          
+          <ul class="card-features">
+            <li>Track your donations</li>
+            <li>Get donation reminders</li>
+            <li>View your donation history</li>
+            <li>Help save lives</li>
+          </ul>
+          
+          <a href="{% url 'register' %}" class="btn reg-btn">
+            <i class="fas fa-user-plus me-2"></i>Register as Donor
+          </a>
+        </div>
+      </div>
+
+      <!-- Blood Bank Registration Card -->
+      <div class="reg-card bank">
+        <div class="card-body">
+          <div class="card-icon">
+            <i class="fas fa-hospital"></i>
+          </div>
+          <h3>Blood Bank</h3>
+          <p>Register your blood bank and manage inventory</p>
+          
+          <ul class="card-features">
+            <li>Manage blood inventory</li>
+            <li>Receive donation requests</li>
+            <li>Connect with donors</li>
+            <li>Support hospitals</li>
+          </ul>
+          
+          <a href="{% url 'blood_bank_register' %}" class="btn reg-btn">
+            <i class="fas fa-hospital-user me-2"></i>Register Blood Bank
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-link">
+      Already have an account? <a href="{% url 'login' %}">Sign in here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
