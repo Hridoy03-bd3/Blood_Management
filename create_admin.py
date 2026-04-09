@@ -21,8 +21,4 @@ admin_user = CustomUser.objects.create_superuser(
     is_staff=True,
     is_superuser=True,
 )
-print(f"✓ Admin user created successfully")
-print(f"  Username: {admin_user.username}")
-print(f"  Email: {admin_user.email}")
-print(f"  Password: Admin@1234")
-print("\n✅ Admin login credentials are ready!")
+
